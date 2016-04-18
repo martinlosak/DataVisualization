@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Three.js</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<script src="build/three.min.js"></script>
+<script>
+    var scene = new THREE.Scene();
+
+    var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(0, 130, 500);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    var axisHelper = new THREE.AxisHelper(500);
+    scene.add(axisHelper);
+
+    // Valec
+    var radius = 200;
+    var height = 100;
+    var segments = 10;
+    var cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, segments);
+    console.log(cylinderGeometry.faces.length);
+    sides = cylinderGeometry.faces.length / 2;
+    for (var i = 0; i < sides; i += 2) {
+        var hex = Math.random() * 0xffffff;
+        cylinderGeometry.faces[i].color.setHex(hex);
+        cylinderGeometry.faces[i + 1].color.setHex(hex);
+    }
+
+    up = 30;
+    for (var j = 20; j < up; j += 1) {
+        cylinderGeometry.faces[j].color.setHex(0xff0000);
+    }
+
+    cylinder = new THREE.Mesh(cylinderGeometry, new THREE.MeshBasicMaterial({vertexColors: THREE.FaceColors, overdraw: 0.5}));
+    scene.add(cylinder);
+
+    // Curved Lines
+    var curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-radius, height / 2, 0),
+        new THREE.Vector3(0, height / 2, 150),
+        new THREE.Vector3(radius, height / 2, 0)
+    ]);
+    var geometry = new THREE.Geometry();
+    geometry.vertices = curve.getPoints(50);
+    var spline = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0x00ffff}));
+    scene.add(spline);
+
+
+
+    function render() {
+        requestAnimationFrame(render);
+        cylinder.rotation.y += 0.01;
+        spline.rotation.y += 0.01;
+        renderer.render(scene, camera);
+    }
+    render()
+</script>
+
+</body>
+</html>

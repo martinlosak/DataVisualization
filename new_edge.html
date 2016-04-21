@@ -32,9 +32,7 @@
     var height = 100;
     var segments = 20;
     var cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, segments);
-    console.log(cylinderGeometry.faces.length);
     sides = cylinderGeometry.faces.length / 2;
-    console.log(cylinderGeometry.vertices.length);
     for (var i = 0; i < sides; i += 2) {
         var hex = Math.random() * 0xffffff;
         cylinderGeometry.faces[i].color.setHex(hex);
@@ -55,26 +53,55 @@
     // Curved Lines
     var cities = 20;
     var flight = 30;
-    for(var x = 0; x < 21; x += 10) {
-        var curve = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(-radius, height / 2, 0),
-            new THREE.Vector3(0, height / 2, 150),
-            new THREE.Vector3(radius+x, height / 2, 0)
-        ]);
-        var geometry = new THREE.Geometry();
-        geometry.vertices = curve.getPoints(50);
-        var spline = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0x4682b4}));
-        scene.add(spline);
-    }
+
+    line11();
+
+    //    for(var x = 0; x < 20; x += 10) {
+    var curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-radius, height / 2, 0),
+        new THREE.Vector3(0, height / 2, 150),
+        new THREE.Vector3(radius, height / 2, 0)
+    ]);
+    var geometry = new THREE.Geometry();
+    geometry.vertices = curve.getPoints(50);
+    var spline = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0x4682b4}));
+    scene.add(spline);
+    //    }
 
 
     function render() {
         requestAnimationFrame(render);
 //        cylinder.rotation.y += 0.01;
 //        spline.rotation.y += 0.01;
+//        line1.rotation.y += 0.01;
+//        line2.rotation.y += 0.01;
         renderer.render(scene, camera);
     }
-    render()
+    render();
+
+    function line11() {
+        for (var i = 0; i <= 90; i += 30) {
+            var material = new THREE.LineBasicMaterial({
+                color: 0x0000ff
+            });
+
+            console.log('Stupen: ' + i);
+            console.log('Cos: ' + Math.cos(i));
+            console.log('Sin: ' + Math.sin(i));
+            console.log('200*Cos: ' + 200*Math.cos(i));
+            console.log('200*Sin: ' + 200*Math.sin(i));
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(
+                    new THREE.Vector3(-200, 50, 0),
+                    new THREE.Vector3(200*Math.cos(i), 50, 200*Math.sin(i))
+            );
+            console.log(geometry.vertices);
+
+            var line = new THREE.Line(geometry, material);
+            scene.add(line);
+            line.rotation.x = 20;
+        }
+    }
 </script>
 
 </body>

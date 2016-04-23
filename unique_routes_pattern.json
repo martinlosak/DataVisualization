@@ -1,0 +1,23 @@
+{
+    "Astypalaia": [
+        "Kursk",
+        "Eindhoven"
+    ],
+    "Funchal": [
+        "Astypalaia",
+        "Mykonos"
+    ],
+    "Kursk": [
+        "Eindhoven"
+    ],
+    "Eindhoven": [
+        "Astypalaia",
+        "Kursk",
+        "Funchal",
+        "Mykonos"
+    ],
+    "Mykonos": [
+        "Astypalaia",
+        "Eindhoven"
+    ]
+}

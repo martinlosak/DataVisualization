@@ -14,7 +14,11 @@
 
 <script src="build/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
+<script src="lib/jquery-1.7.1.min.js"></script>
 <script>
+    var radius = 200;
+    var height = 100;
+
     var scene = new THREE.Scene();
 
     var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
@@ -30,17 +34,35 @@
     var axisHelper = new THREE.AxisHelper(500);
     scene.add(axisHelper);
 
-    drawCylinder(200, 100, 20);
+    $.getJSON("unique_routes_pattern.json", function (data) {
 
-    drawStraightLines(20, 30);
+        var nodesOnCircle = [];
+        var nodesCount = Object.keys(data).length;
+
+        // count coordinates for each source airport
+        var nodesGap = 2 * Math.PI / nodesCount;
+        var index = 0;
+        $.each(data, function (sAirport) {
+            var nodeOnCircle = {};
+            nodeOnCircle.name = sAirport;
+            nodeOnCircle.x = radius * Math.cos(index);
+            nodeOnCircle.y = 50;
+            nodeOnCircle.z = radius * Math.sin(index);
+            nodesOnCircle.push(nodeOnCircle);
+
+            index += nodesGap;
+        });
+
+        //draw lines from source to all destination airports
+        $.each(data, function (sAirport, dAirports) {
+            drawStraightLine(sAirport, dAirports, nodesOnCircle)
+        });
+    });
+
+    drawCylinder(radius, height, 20);
+
     //    drawCurvedLines();
 
-
-    function render() {
-        requestAnimationFrame(render);
-        renderer.render(scene, camera);
-        controls.update();
-    }
     render();
 
     function drawCylinder(radius, height, segments) {
@@ -63,26 +85,45 @@
         scene.add(cylinder);
     }
 
-    function drawStraightLines(nodes, edges) {
-        var circleLength = 2 * Math.PI;
-        var nodesGap = 2 * Math.PI / nodes;
-        for (var i = 0; i < circleLength; i += nodesGap) {
-            console.log(i);
+    function drawStraightLine(sAirport, dAirports, nodeOnCircle) {
+        var sourceNode = nodeOnCircle.filter(function (index) {
+            return index.name === sAirport;
+        });
+
+        // pre kazde cielove letisko vykresli ciaru zo zdrojoveho letiska
+        $.each(dAirports, function (index, value) {
+            var destNode = nodeOnCircle.filter(function (index) {
+                return index.name === value;
+            });
+
+            console.log("Source: ["+sourceNode[0].name+"]  ["+sourceNode[0].x+"]["+sourceNode[0].y+"]["+sourceNode[0].z+"]");
+            console.log("Dest:   ["+destNode[0].name+"] ["+destNode[0].x+"]["+destNode[0].y+"]["+destNode[0].z+"]");
+
+            //BEGIN DRAW
             var material = new THREE.LineBasicMaterial({
                 color: 0x4682b4
             });
 
             var geometry = new THREE.Geometry();
             geometry.vertices.push(
-                    new THREE.Vector3(-200, 50, 0),
-                    new THREE.Vector3(200 * Math.cos(i), 50, 200 * Math.sin(i))
+                    new THREE.Vector3(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z),
+                    new THREE.Vector3(destNode[0].x, destNode[0].y,destNode[0].z)
             );
-
-            console.log(geometry.vertices);
 
             var line = new THREE.Line(geometry, material);
             scene.add(line);
-        }
+
+            var spritey1 = makeTextSprite(sourceNode[0].name);
+            spritey1.position.set(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z);
+            scene.add(spritey1);
+
+            var spritey = makeTextSprite(destNode[0].name);
+            spritey.position.set(destNode[0].x, destNode[0].y, destNode[0].z);
+            scene.add(spritey);
+            //END DRAW
+
+        });
+
     }
 
     function drawCurvedLines() {
@@ -95,6 +136,30 @@
         geometry.vertices = curve.getPoints(50);
         var spline = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0x4682b4}));
         scene.add(spline);
+    }
+
+    function makeTextSprite(message) {
+
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        context.font = "12px sans-serif";
+        context.fillStyle = "#4682b4";
+        context.fillText(message, 4, 18);
+
+        // canvas contents will be used for a texture
+        var texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true;
+        var spriteMaterial = new THREE.SpriteMaterial(
+                {map: texture});
+        var sprite = new THREE.Sprite(spriteMaterial);
+        sprite.scale.set(100, 100, 1);
+        return sprite;
+    }
+
+    function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+        controls.update();
     }
 </script>
 

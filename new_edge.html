@@ -13,6 +13,7 @@
 <body>
 
 <script src="build/three.min.js"></script>
+<script src="js/controls/OrbitControls.js"></script>
 <script>
     var scene = new THREE.Scene();
 
@@ -24,83 +25,76 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+
     var axisHelper = new THREE.AxisHelper(500);
     scene.add(axisHelper);
 
-    // Valec
-    var radius = 200;
-    var height = 100;
-    var segments = 20;
-    var cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, segments);
-    sides = cylinderGeometry.faces.length / 2;
-    for (var i = 0; i < sides; i += 2) {
-        var hex = Math.random() * 0xffffff;
-        cylinderGeometry.faces[i].color.setHex(hex);
-        cylinderGeometry.faces[i + 1].color.setHex(hex);
-    }
+    drawCylinder(200, 100, 20);
 
-    up = 30;
-    for (var j = 20; j < up; j += 1) {
-        cylinderGeometry.faces[j].color.setHex(0xff0000);
-    }
-
-    cylinder = new THREE.Mesh(cylinderGeometry, new THREE.MeshBasicMaterial({
-        vertexColors: THREE.FaceColors
-    }));
-    cylinder.rotation.x = 20;
-    scene.add(cylinder);
-
-    // Curved Lines
-    var cities = 20;
-    var flight = 30;
-
-    line11();
-
-    //    for(var x = 0; x < 20; x += 10) {
-    var curve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-radius, height / 2, 0),
-        new THREE.Vector3(0, height / 2, 150),
-        new THREE.Vector3(radius, height / 2, 0)
-    ]);
-    var geometry = new THREE.Geometry();
-    geometry.vertices = curve.getPoints(50);
-    var spline = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0x4682b4}));
-    scene.add(spline);
-    //    }
+    drawStraightLines(20, 30);
+    //    drawCurvedLines();
 
 
     function render() {
         requestAnimationFrame(render);
-//        cylinder.rotation.y += 0.01;
-//        spline.rotation.y += 0.01;
-//        line1.rotation.y += 0.01;
-//        line2.rotation.y += 0.01;
         renderer.render(scene, camera);
+        controls.update();
     }
     render();
 
-    function line11() {
-        for (var i = 0; i <= 90; i += 30) {
+    function drawCylinder(radius, height, segments) {
+        var cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, segments);
+        var sides = cylinderGeometry.faces.length / 2;
+        for (var i = 0; i < sides; i += 2) {
+            var hex = Math.random() * 0xffffff;
+            cylinderGeometry.faces[i].color.setHex(hex);
+            cylinderGeometry.faces[i + 1].color.setHex(hex);
+        }
+
+        // vyfarbi vrch
+        for (var j = 20; j < 30; j += 1) {
+            cylinderGeometry.faces[j].color.setHex(0xff0000);
+        }
+
+        var cylinder = new THREE.Mesh(cylinderGeometry, new THREE.MeshBasicMaterial({
+            vertexColors: THREE.FaceColors
+        }));
+        scene.add(cylinder);
+    }
+
+    function drawStraightLines(nodes, edges) {
+        var circleLength = 2 * Math.PI;
+        var nodesGap = 2 * Math.PI / nodes;
+        for (var i = 0; i < circleLength; i += nodesGap) {
+            console.log(i);
             var material = new THREE.LineBasicMaterial({
-                color: 0x0000ff
+                color: 0x4682b4
             });
 
-            console.log('Stupen: ' + i);
-            console.log('Cos: ' + Math.cos(i));
-            console.log('Sin: ' + Math.sin(i));
-            console.log('200*Cos: ' + 200*Math.cos(i));
-            console.log('200*Sin: ' + 200*Math.sin(i));
             var geometry = new THREE.Geometry();
             geometry.vertices.push(
                     new THREE.Vector3(-200, 50, 0),
-                    new THREE.Vector3(200*Math.cos(i), 50, 200*Math.sin(i))
+                    new THREE.Vector3(200 * Math.cos(i), 50, 200 * Math.sin(i))
             );
+
             console.log(geometry.vertices);
 
             var line = new THREE.Line(geometry, material);
             scene.add(line);
-            line.rotation.x = 20;
         }
+    }
+
+    function drawCurvedLines() {
+        var curve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-radius, height / 2, 0),
+            new THREE.Vector3(0, height / 2, 150),
+            new THREE.Vector3(radius, height / 2, 0)
+        ]);
+        var geometry = new THREE.Geometry();
+        geometry.vertices = curve.getPoints(50);
+        var spline = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0x4682b4}));
+        scene.add(spline);
     }
 </script>
 

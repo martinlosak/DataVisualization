@@ -34,7 +34,7 @@
     var axisHelper = new THREE.AxisHelper(500);
     scene.add(axisHelper);
 
-    $.getJSON("unique_routes_pattern.json", function (data) {
+    $.getJSON("data/unique_routes_pattern.json", function (data) {
 
         var nodesOnCircle = [];
         var nodesCount = Object.keys(data).length;
@@ -96,8 +96,8 @@
                 return index.name === value;
             });
 
-            console.log("Source: ["+sourceNode[0].name+"]  ["+sourceNode[0].x+"]["+sourceNode[0].y+"]["+sourceNode[0].z+"]");
-            console.log("Dest:   ["+destNode[0].name+"] ["+destNode[0].x+"]["+destNode[0].y+"]["+destNode[0].z+"]");
+            console.log("Source: [" + sourceNode[0].name + "]  [" + sourceNode[0].x + "][" + sourceNode[0].y + "][" + sourceNode[0].z + "]");
+            console.log("Dest:   [" + destNode[0].name + "] [" + destNode[0].x + "][" + destNode[0].y + "][" + destNode[0].z + "]");
 
             //BEGIN DRAW
             var material = new THREE.LineBasicMaterial({
@@ -107,19 +107,15 @@
             var geometry = new THREE.Geometry();
             geometry.vertices.push(
                     new THREE.Vector3(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z),
-                    new THREE.Vector3(destNode[0].x, destNode[0].y,destNode[0].z)
+                    new THREE.Vector3(destNode[0].x, destNode[0].y, destNode[0].z)
             );
 
             var line = new THREE.Line(geometry, material);
             scene.add(line);
 
-            var spritey1 = makeTextSprite(sourceNode[0].name);
-            spritey1.position.set(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z);
-            scene.add(spritey1);
+            makeTextSprite(sourceNode[0].name, sourceNode[0].x, sourceNode[0].y, sourceNode[0].z);
+            makeTextSprite(destNode[0].name, destNode[0].x, destNode[0].y, destNode[0].z);
 
-            var spritey = makeTextSprite(destNode[0].name);
-            spritey.position.set(destNode[0].x, destNode[0].y, destNode[0].z);
-            scene.add(spritey);
             //END DRAW
 
         });
@@ -138,7 +134,7 @@
         scene.add(spline);
     }
 
-    function makeTextSprite(message) {
+    function makeTextSprite(message, x, y, z) {
 
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
@@ -149,11 +145,11 @@
         // canvas contents will be used for a texture
         var texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
-        var spriteMaterial = new THREE.SpriteMaterial(
-                {map: texture});
+        var spriteMaterial = new THREE.SpriteMaterial({map: texture});
         var sprite = new THREE.Sprite(spriteMaterial);
         sprite.scale.set(100, 100, 1);
-        return sprite;
+        sprite.position.set(x, y, z);
+        scene.add(sprite);
     }
 
     function render() {

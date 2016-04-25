@@ -146,6 +146,15 @@
     function render() {
         requestAnimationFrame(render);
         addEventListener('mousemove', onMouseMove, false);
+        addEventListener('mousedown', onMouseDown, false);
+
+        renderer.render(scene, camera);
+        controls.update();
+    }
+
+    function onMouseMove(event) {
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
 
@@ -164,15 +173,22 @@
             }
             INTERSECTED = null;
         }
-
-
-        renderer.render(scene, camera);
-        controls.update();
     }
 
-    function onMouseMove(event) {
+    function onMouseDown(event) {
+        console.log("Click");
+
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        var intersects = raycaster.intersectObjects(lineGroup.children);
+
+        if (intersects.length > 0) {
+            intersects[0].object.material.color.setHex(0x13ce1f);
+            INTERSECTED = null;
+        }
     }
 </script>
 

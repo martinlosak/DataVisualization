@@ -15,6 +15,7 @@
 <script src="build/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
 <script src="lib/jquery-1.7.1.min.js"></script>
+<div id="detail">Detail on demand</div>
 <script>
     var radius = 200;
     var height = 100;
@@ -25,7 +26,7 @@
     // SETUP
     var scene = new THREE.Scene();
 
-    var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+    var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
     camera.position.set(0, 130, 500);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -73,36 +74,22 @@
 
     function drawCylinder(radius, height, segments) {
         var cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, segments);
-        var sides = cylinderGeometry.faces.length / 2;
-        for (var i = 0; i < sides; i += 2) {
-            var hex = Math.random() * 0xffffff;
-            cylinderGeometry.faces[i].color.setHex(hex);
-            cylinderGeometry.faces[i + 1].color.setHex(hex);
-        }
-
-        // vyfarbi vrch
-        for (var j = 20; j < 30; j += 1) {
-            cylinderGeometry.faces[j].color.setHex(0xff0000);
-        }
-
-        var cylinder = new THREE.Mesh(cylinderGeometry, new THREE.MeshBasicMaterial({
-            vertexColors: THREE.FaceColors
-        }));
+        var cylinder = new THREE.Mesh(cylinderGeometry, new THREE.MeshBasicMaterial({opacity: 0, transparent: true}));
+        scene.add(new THREE.EdgesHelper(cylinder, 0x00ff00));
         scene.add(cylinder);
     }
 
-    function drawStraightLine(sAirport, dAirports, nodeOnCircle) {
-        var sourceNode = nodeOnCircle.filter(function (index) {
+    function drawStraightLine(sAirport, dAirports, nodesOnCircle) {
+        var sourceNode = nodesOnCircle.filter(function (index) {
             return index.name === sAirport;
         });
 
         // pre kazde cielove letisko vykresli ciaru zo zdrojoveho letiska
         $.each(dAirports, function (index, value) {
-            var destNode = nodeOnCircle.filter(function (index) {
+            var destNode = nodesOnCircle.filter(function (index) {
                 return index.name === value;
             });
 
-            //BEGIN DRAW
             var material = new THREE.LineBasicMaterial({
                 color: 0x4682b4
             });
@@ -114,14 +101,12 @@
             );
 
             var line = new THREE.Line(geometry, material);
+            line.name = sourceNode[0].name + " -> " + destNode[0].name;
             lineGroup.add(line);
             scene.add(lineGroup);
 
             drawLabel(sourceNode[0].name, sourceNode[0].x, sourceNode[0].y, sourceNode[0].z);
             drawLabel(destNode[0].name, destNode[0].x, destNode[0].y, destNode[0].z);
-
-            //END DRAW
-
         });
 
     }
@@ -130,7 +115,7 @@
 
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
-        context.font = "12px sans-serif";
+        context.font = "20px sans-serif";
         context.fillStyle = "#4682b4";
         context.fillText(message, 4, 18);
 
@@ -138,7 +123,7 @@
         texture.needsUpdate = true;
         var labelMaterial = new THREE.SpriteMaterial({map: texture});
         var label = new THREE.Sprite(labelMaterial);
-        label.scale.set(100, 100, 1);
+        label.scale.set(50, 50, 1);
         label.position.set(x, y, z);
         scene.add(label);
     }
@@ -167,6 +152,7 @@
             INTERSECTED = intersects[0].object;
             INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
             INTERSECTED.material.color.setHex(0xff0000);
+            $('#detail').text(intersects[0].object.name);
         } else {
             if (INTERSECTED) {
                 INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
@@ -186,6 +172,7 @@
         var intersects = raycaster.intersectObjects(lineGroup.children);
 
         if (intersects.length > 0) {
+
             intersects[0].object.material.color.setHex(0x13ce1f);
             INTERSECTED = null;
         }

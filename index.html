@@ -8,20 +8,32 @@
             margin: 0;
             overflow: hidden;
         }
+
+        h1 {
+            color: white;
+        }
+
+        #detail {
+            font-size: large;
+        }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 </head>
 <body>
 
 <script src="build/three.min.js"></script>
 <script src="js/controls/OrbitControls.js"></script>
 <script src="lib/jquery-1.7.1.min.js"></script>
-<div id="detail">Detail on demand</div>
+<h1>Detail on Demand:</h1>
+<div id="detail"></div>
 <script>
     var radius = 200;
     var height = 100;
-    var file = "data/unique_routes_pattern.json";
+    var file = "data/unique_routes.json";
     var lineGroup = new THREE.Object3D();
+    var lineColor = 0x4682b4;
     var INTERSECTED;
+    var CLICKED;
 
     // SETUP
     var scene = new THREE.Scene();
@@ -91,7 +103,7 @@
             });
 
             var material = new THREE.LineBasicMaterial({
-                color: 0x4682b4
+                color: lineColor
             });
 
             var geometry = new THREE.Geometry();
@@ -138,8 +150,11 @@
     }
 
     function onMouseMove(event) {
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
+//        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+//        mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
+
+        mouse.x = ( (event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.width ) * 2 - 1;
+        mouse.y = -( (event.clientY - renderer.domElement.offsetTop) / renderer.domElement.height ) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
 
@@ -162,8 +177,6 @@
     }
 
     function onMouseDown(event) {
-        console.log("Click");
-
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
 
@@ -172,8 +185,11 @@
         var intersects = raycaster.intersectObjects(lineGroup.children);
 
         if (intersects.length > 0) {
-
-            intersects[0].object.material.color.setHex(0x13ce1f);
+            if (CLICKED) {
+                CLICKED.material.color.setHex(lineColor);
+            }
+            CLICKED = intersects[0].object;
+            CLICKED.material.color.setHex(0xffff00);
             INTERSECTED = null;
         }
     }

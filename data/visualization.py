@@ -88,4 +88,4 @@ def create_new_json():
 
 a = load_eu_airports()
 load_routes(a)
-create_new_json()
+create_json()

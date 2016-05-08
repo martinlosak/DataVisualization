@@ -1,32 +1,65 @@
 {
+    "Szczecin": [
+        "Warsaw"
+    ],
+    "Salzburg": [
+        "Vienna"
+    ],
+    "Kosice": [
+        "Bratislava",
+        "Prague",
+        "Vienna"
+    ],
+    "Budapest": [
+        "Warsaw",
+        "Prague",
+        "Vienna",
+        "Kiev"
+    ],
+    "Lublin": [
+        "Gdansk"
+    ],
+    "Dnepropetrovsk": [
+        "Vienna",
+        "Kiev"
+    ],
+    "Uzhgorod": [
+        "Kiev"
+    ],
+    "Odessa": [
+        "Warsaw",
+        "Vienna",
+        "Kiev"
+    ],
     "Gdansk": [
         "Warsaw",
         "Krakow",
         "Lublin",
-        "Wroclaw",
-        "Warsaw"
+        "Wroclaw"
     ],
-    "Bratislava": [
-        "Prague",
-        "Kosice",
-        "Prague",
-        "Prague"
+    "Katowice": [
+        "Warsaw",
+        "Kiev"
+    ],
+    "Donetsk": [
+        "Kiev"
+    ],
+    "Lvov": [
+        "Warsaw",
+        "Vienna",
+        "Kiev"
     ],
     "Graz": [
         "Vienna"
     ],
-    "Szczecin": [
-        "Warsaw"
-    ],
-    "Zaporozhye": [
-        "Kiev"
-    ],
-    "Kosice": [
+    "Prague": [
+        "Warsaw",
         "Bratislava",
-        "Bratislava",
-        "Prague",
-        "Vienna",
-        "Prague"
+        "Budapest",
+        "Kiev",
+        "Kosice",
+        "Ostrava",
+        "Vienna"
     ],
     "Kiev": [
         "Warsaw",
@@ -40,54 +73,38 @@
         "Ivano-Frankivsk",
         "Lvov",
         "Odessa",
-        "Prague",
-        "Vienna",
-        "Warsaw",
-        "Prague",
-        "Donetsk",
-        "Odessa",
         "Simferopol",
         "Budapest",
         "Katowice",
-        "Dnepropetrovsk",
-        "Ivano-Frankivsk",
         "Sevastopol"
+    ],
+    "Ostrava": [
+        "Prague"
+    ],
+    "Kharkov": [
+        "Vienna",
+        "Kiev",
+        "Warsaw"
+    ],
+    "Zaporozhye": [
+        "Kiev"
+    ],
+    "Ivano-Frankivsk": [
+        "Kiev"
+    ],
+    "Wroclaw": [
+        "Warsaw",
+        "Gdansk"
+    ],
+    "Sevastopol": [
+        "Kiev"
     ],
     "Krakow": [
         "Gdansk",
         "Vienna",
-        "Warsaw",
-        "Vienna"
-    ],
-    "Lublin": [
-        "Gdansk"
-    ],
-    "Katowice": [
-        "Warsaw",
-        "Kiev"
-    ],
-    "Ostrava": [
-        "Prague",
-        "Prague"
-    ],
-    "Salzburg": [
-        "Vienna",
-        "Vienna",
-        "Vienna"
-    ],
-    "Innsbruck": [
-        "Vienna"
-    ],
-    "Donetsk": [
-        "Kiev",
-        "Kiev"
-    ],
-    "Ivano-Frankivsk": [
-        "Kiev",
-        "Kiev"
+        "Warsaw"
     ],
     "Vienna": [
-        "Salzburg",
         "Salzburg",
         "Krakow",
         "Warsaw",
@@ -98,52 +115,33 @@
         "Innsbruck",
         "Kiev",
         "Klagenfurt",
-        "Krakow",
         "Kosice",
         "Linz",
         "Lvov",
         "Odessa",
+        "Prague"
+    ],
+    "Innsbruck": [
+        "Vienna"
+    ],
+    "Poznan": [
+        "Warsaw"
+    ],
+    "Klagenfurt": [
+        "Vienna"
+    ],
+    "Bratislava": [
         "Prague",
-        "Salzburg",
-        "Warsaw",
-        "Kharkov",
-        "Kiev",
-        "Lvov",
-        "Odessa",
-        "Dnepropetrovsk"
+        "Kosice"
     ],
     "Linz": [
         "Vienna",
         "Salzburg"
     ],
-    "Wroclaw": [
-        "Warsaw",
-        "Gdansk",
-        "Warsaw"
-    ],
-    "Rzeszow": [
-        "Warsaw"
-    ],
-    "Simferopol": [
-        "Kiev"
-    ],
-    "Lvov": [
-        "Warsaw",
-        "Vienna",
-        "Kiev",
-        "Vienna"
-    ],
-    "Dnepropetrovsk": [
-        "Vienna",
-        "Kiev",
-        "Kiev",
-        "Vienna"
-    ],
     "Warsaw": [
         "Gdansk",
         "Wroclaw",
         "Budapest",
-        "Gdansk",
         "Kiev",
         "Krakow",
         "Katowice",
@@ -154,62 +152,12 @@
         "Rzeszow",
         "Szczecin",
         "Vienna",
-        "Wroclaw",
-        "Prague",
-        "Vienna",
-        "Kiev",
-        "Prague",
-        "Budapest",
         "Kharkov"
     ],
-    "Odessa": [
-        "Warsaw",
-        "Vienna",
-        "Kiev",
-        "Vienna",
+    "Simferopol": [
         "Kiev"
     ],
-    "Prague": [
-        "Warsaw",
-        "Bratislava",
-        "Budapest",
-        "Kiev",
-        "Kosice",
-        "Ostrava",
-        "Warsaw",
-        "Vienna",
-        "Kiev",
-        "Bratislava",
-        "Budapest",
-        "Kiev",
-        "Kosice",
-        "Ostrava",
-        "Warsaw"
-    ],
-    "Uzhgorod": [
-        "Kiev"
-    ],
-    "Budapest": [
-        "Warsaw",
-        "Prague",
-        "Vienna",
-        "Prague",
-        "Kiev",
-        "Warsaw"
-    ],
-    "Sevastopol": [
-        "Kiev"
-    ],
-    "Poznan": [
-        "Warsaw"
-    ],
-    "Klagenfurt": [
-        "Vienna"
-    ],
-    "Kharkov": [
-        "Vienna",
-        "Kiev",
-        "Vienna",
+    "Rzeszow": [
         "Warsaw"
     ]
 }

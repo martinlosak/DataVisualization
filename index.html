@@ -4,32 +4,35 @@
     <meta charset="utf-8">
     <title>Three.js</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
 
-        h1 {
-            color: white;
-        }
-
-        #detail {
-            font-size: large;
-        }
     </style>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery-1.12.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
 </head>
 <body>
 
-<script src="build/three.min.js"></script>
-<script src="js/controls/OrbitControls.js"></script>
-<script src="lib/jquery-1.7.1.min.js"></script>
-<h1>Detail on Demand:</h1>
-<div id="detail"></div>
+<script src="js/three.min.js"></script>
+<script src="threejs/controls/OrbitControls.js"></script>
+
+<div class="jumbotron">
+    <div class="container">
+        <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">Select City <span
+                    class="caret"></span></button>
+            <ul class="dropdown-menu" id="myDropdown">
+                <li><a onclick="onSelectFilter('All')">All routes</a></li>
+            </ul>
+        </div>
+        <h2>Flight Detail:</h2>
+        <div id="detail"><span class="glyphicon glyphicon-plane"></span> <span id="departure"></span></div>
+    </div>
+</div>
 <script>
     var radius = 200;
     var height = 100;
-    var file = "data/unique_routes.json";
+    var file = "data/unique_routes_pattern.json";
     var lineGroup = new THREE.Object3D();
     var lineColor = 0x4682b4;
     var INTERSECTED;
@@ -53,7 +56,6 @@
 
     var mouse = new THREE.Vector2();
 
-
     // CUSTOM OBJECT CREATION
     $.getJSON(file, function (data) {
 
@@ -71,12 +73,14 @@
             nodeOnCircle.z = radius * Math.sin(index);
             nodesOnCircle.push(nodeOnCircle);
 
+            putOnDropdown(sAirport);
+
             index += nodesGap;
         });
 
         //draw lines from source to all destination airports
         $.each(data, function (sAirport, dAirports) {
-            drawStraightLine(sAirport, dAirports, nodesOnCircle)
+            drawCurvedLines(sAirport, dAirports, nodesOnCircle)
         });
     });
 
@@ -91,10 +95,33 @@
         scene.add(cylinder);
     }
 
-    function drawStraightLine(sAirport, dAirports, nodesOnCircle) {
+    function drawCurvedLines(sAirport, dAirports, nodesOnCircle) {
+        // najdenie a ulozenie zdrojoveho letiska
         var sourceNode = nodesOnCircle.filter(function (index) {
             return index.name === sAirport;
         });
+
+        //vypocet centroidu pre vsetky cielove letiska pre zakrivenie
+        var globalCenterX = 0;
+        var globalCenterY = 0;
+        var destNumber = 0;
+
+        $.each(dAirports, function (index, value) {
+            var destNode = nodesOnCircle.filter(function (index) {
+                return index.name === value;
+            });
+
+            var centerX = (sourceNode[0].x + destNode[0].x) / 2;
+            var centerY = (sourceNode[0].y + destNode[0].y) / 2;
+
+            globalCenterX += centerX;
+            globalCenterY += centerY;
+            destNumber += 1;
+
+        });
+
+        globalCenterX = globalCenterX / destNumber;
+        globalCenterY = globalCenterY / destNumber;
 
         // pre kazde cielove letisko vykresli ciaru zo zdrojoveho letiska
         $.each(dAirports, function (index, value) {
@@ -102,15 +129,18 @@
                 return index.name === value;
             });
 
+            var curve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z),
+                new THREE.Vector3(globalCenterX, 50, globalCenterY),
+                new THREE.Vector3(destNode[0].x, destNode[0].y, destNode[0].z)
+            ]);
+
+            var geometry = new THREE.Geometry();
+            geometry.vertices = curve.getPoints(50);
+
             var material = new THREE.LineBasicMaterial({
                 color: lineColor
             });
-
-            var geometry = new THREE.Geometry();
-            geometry.vertices.push(
-                    new THREE.Vector3(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z),
-                    new THREE.Vector3(destNode[0].x, destNode[0].y, destNode[0].z)
-            );
 
             var line = new THREE.Line(geometry, material);
             line.name = sourceNode[0].name + " -> " + destNode[0].name;
@@ -123,6 +153,7 @@
 
     }
 
+    // funkcia na vykreslenie nazvu letiska ku kazdemu uzlu
     function drawLabel(message, x, y, z) {
 
         var canvas = document.createElement('canvas');
@@ -150,9 +181,6 @@
     }
 
     function onMouseMove(event) {
-//        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-//        mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
-
         mouse.x = ( (event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.width ) * 2 - 1;
         mouse.y = -( (event.clientY - renderer.domElement.offsetTop) / renderer.domElement.height ) * 2 + 1;
 
@@ -167,7 +195,7 @@
             INTERSECTED = intersects[0].object;
             INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
             INTERSECTED.material.color.setHex(0xff0000);
-            $('#detail').text(intersects[0].object.name);
+            $('#departure').text(intersects[0].object.name);
         } else {
             if (INTERSECTED) {
                 INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
@@ -177,8 +205,8 @@
     }
 
     function onMouseDown(event) {
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
+        mouse.x = ( (event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.width ) * 2 - 1;
+        mouse.y = -( (event.clientY - renderer.domElement.offsetTop) / renderer.domElement.height ) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
 
@@ -192,6 +220,30 @@
             CLICKED.material.color.setHex(0xffff00);
             INTERSECTED = null;
         }
+    }
+
+    function onSelectFilter(input) {
+        $.each(lineGroup.children, function (index, line) {
+            line.visible = true;
+        });
+
+        if (input != 'All') {
+            $.each(lineGroup.children, function (index, line) {
+                if (line.name.indexOf(input + ' -> ') < 0) {
+                    line.visible = false;
+                }
+            });
+        }
+    }
+
+    function putOnDropdown(name) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.textContent = name;
+        a.setAttribute('onclick', "onSelectFilter('" + name + "')");
+        li.appendChild(a);
+        var drop = document.getElementById("myDropdown");
+        drop.appendChild(li);
     }
 </script>
 

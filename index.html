@@ -11,7 +11,7 @@
 <body>
 
 <script src="js/three.min.js"></script>
-<script src="threejs/controls/OrbitControls.js"></script>
+<script src="js/OrbitControls.js"></script>
 
 <div class="jumbotron">
     <div class="container">
@@ -33,7 +33,7 @@
 <script>
     var radius = 200;
     var height = 100;
-    var file = "data/unique_routes.json";
+    var file = "data/unique_routes_neigh.json";
     var lineGroup = new THREE.Object3D();
     var lineColor = 0x4682b4;
     var INTERSECTED;
@@ -73,6 +73,7 @@
             nodeOnCircle.z = radius * Math.sin(index);
             nodesOnCircle.push(nodeOnCircle);
 
+            drawLabel(nodeOnCircle.name, nodeOnCircle.x, nodeOnCircle.y, nodeOnCircle.z);
             putOnDropdown(sAirport);
 
             index += nodesGap;
@@ -146,9 +147,6 @@
                 line.name = sourceNode[0].name + " -> " + destNode[0].name;
                 lineGroup.add(line);
                 scene.add(lineGroup);
-
-                drawLabel(sourceNode[0].name, sourceNode[0].x, sourceNode[0].y, sourceNode[0].z);
-                drawLabel(destNode[0].name, destNode[0].x, destNode[0].y, destNode[0].z);
             }
         });
     }

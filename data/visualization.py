@@ -5,10 +5,10 @@ import json
 # nacita vsetky europske letiska a ulozi do dictionary id:city
 def load_eu_airports():
     # Slovakia and neighbours
-    # country_set = {'Slovakia', 'Czech Republic', 'Austria', 'Poland', 'Hungary', 'Ukraine'}
+    country_set = {'Slovakia', 'Czech Republic', 'Austria', 'Poland', 'Hungary', 'Ukraine'}
     # Slovakia and neighbours + West
-    country_set = {'Slovakia', 'Czech Republic', 'Austria', 'Poland', 'Hungary', 'Ukraine', 'Germany', 'Switzerland',
-                   'United Kingdom', 'Italy'}
+    # country_set = {'Slovakia', 'Czech Republic', 'Austria', 'Poland', 'Hungary', 'Ukraine', 'Germany', 'Switzerland',
+    #                'United Kingdom', 'Italy'}
     eu_airports_id = {}
     with open('airports.csv', 'r', encoding='utf8') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -62,33 +62,9 @@ def create_json():
                     if row['source_city'] == source_airport and row['dest_city'] not in destination_airports:
                         unique_list.setdefault(row['source_city'], []).append(row['dest_city'])
 
-    with open('unique_routes.json', 'w', encoding='utf8', newline='') as f:
+    with open('unique_routes_neigh.json', 'w', encoding='utf8', newline='') as f:
         json.dump(unique_list, f, indent=4)
     print('EU Unique routes [source_city:[dest_city,dest_city,..]]: ' + str(len(unique_list)))
-
-
-def create_new_json():
-    unique_list = {}
-    with open('routes_new.csv', 'r', encoding='utf8') as f:
-        routes = csv.DictReader(f)
-
-        # pre vsetky lety
-        for row in routes:
-            # ak sa odletova krajina nenachadza este v liste
-            if row['source_country'] not in unique_list:
-                # vytvor strukturu krajina:[odlet,odlet,...]
-                unique_list.setdefault(row['source_city'], []).append(row['dest_city'])
-            # ak sa uz nachadza
-            else:
-                # skontroluj ci prilet letisko je uz v [priletove_letiska,...]
-                for source_airport, destination_airports in unique_list.items():
-                    if row['source_city'] == source_airport and row['dest_city'] not in destination_airports:
-                        unique_list.setdefault(row['source_city'], []).append(row['dest_city'])
-
-    with open('unique_routes.json', 'w', encoding='utf8', newline='') as f:
-        json.dump(unique_list, f, indent=4)
-    print('EU Unique routes [source_city:[dest_city,dest_city,..]]: ' + str(len(unique_list)))
-
 
 a = load_eu_airports()
 load_routes(a)

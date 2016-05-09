@@ -4,12 +4,16 @@ body {
 }
 
 .jumbotron {
-    position: relative;
-    background: #000 url("bg.jpg") center center;
+    background: url("bg.jpg") center center;
     width: 100%;
     height: 100%;
     background-size: cover;
     overflow: hidden;
+    margin-bottom: 0;
+}
+
+.dropdown {
+    position: absolute;
 }
 
 #detail {

@@ -4,7 +4,11 @@ import json
 
 # nacita vsetky europske letiska a ulozi do dictionary id:city
 def load_eu_airports():
-    country_set = {'Slovakia', 'Czech Republic', 'Austria', 'Poland', 'Hungary', 'Ukraine'}
+    # Slovakia and neighbours
+    # country_set = {'Slovakia', 'Czech Republic', 'Austria', 'Poland', 'Hungary', 'Ukraine'}
+    # Slovakia and neighbours + West
+    country_set = {'Slovakia', 'Czech Republic', 'Austria', 'Poland', 'Hungary', 'Ukraine', 'Germany', 'Switzerland',
+                   'United Kingdom', 'Italy'}
     eu_airports_id = {}
     with open('airports.csv', 'r', encoding='utf8') as csvfile:
         reader = csv.DictReader(csvfile)

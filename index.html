@@ -2,12 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Three.js</title>
-    <style>
-
-    </style>
-    <link rel="stylesheet" href="css/main.css">
+    <title>Flights circle layout</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.3.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 </head>
@@ -21,18 +18,22 @@
         <div class="dropdown">
             <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">Select City <span
                     class="caret"></span></button>
-            <ul class="dropdown-menu" id="myDropdown">
+            <ul class="dropdown-menu pre-scrollable" id="myDropdown">
                 <li><a onclick="onSelectFilter('All')">All routes</a></li>
+                <li class="divider"></li>
             </ul>
         </div>
+        <br>
         <h2>Flight Detail:</h2>
-        <div id="detail"><span class="glyphicon glyphicon-plane"></span> <span id="departure"></span></div>
+        <div id="detail">
+            <span class="glyphicon glyphicon-plane"></span> <span id="departure"></span>
+        </div>
     </div>
 </div>
 <script>
     var radius = 200;
     var height = 100;
-    var file = "data/unique_routes_pattern.json";
+    var file = "data/unique_routes.json";
     var lineGroup = new THREE.Object3D();
     var lineColor = 0x4682b4;
     var INTERSECTED;
@@ -43,7 +44,6 @@
 
     var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100000);
     camera.position.set(0, 130, 500);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -96,12 +96,12 @@
     }
 
     function drawCurvedLines(sAirport, dAirports, nodesOnCircle) {
-        // najdenie a ulozenie zdrojoveho letiska
+        // find and save source airport
         var sourceNode = nodesOnCircle.filter(function (index) {
             return index.name === sAirport;
         });
 
-        //vypocet centroidu pre vsetky cielove letiska pre zakrivenie
+        // count centroid for all destination airports to curve lines
         var globalCenterX = 0;
         var globalCenterY = 0;
         var destNumber = 0;
@@ -110,50 +110,50 @@
             var destNode = nodesOnCircle.filter(function (index) {
                 return index.name === value;
             });
+            if (destNode[0]) {
+                var centerX = (sourceNode[0].x + destNode[0].x) / 2;
+                var centerY = (sourceNode[0].y + destNode[0].y) / 2;
 
-            var centerX = (sourceNode[0].x + destNode[0].x) / 2;
-            var centerY = (sourceNode[0].y + destNode[0].y) / 2;
-
-            globalCenterX += centerX;
-            globalCenterY += centerY;
-            destNumber += 1;
-
+                globalCenterX += centerX;
+                globalCenterY += centerY;
+                destNumber += 1;
+            }
         });
 
         globalCenterX = globalCenterX / destNumber;
         globalCenterY = globalCenterY / destNumber;
 
-        // pre kazde cielove letisko vykresli ciaru zo zdrojoveho letiska
+        // for each destination airport draw line from source airport
         $.each(dAirports, function (index, value) {
             var destNode = nodesOnCircle.filter(function (index) {
                 return index.name === value;
             });
+            if (destNode[0]) {
+                var curve = new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z),
+                    new THREE.Vector3(globalCenterX, 50, globalCenterY),
+                    new THREE.Vector3(destNode[0].x, destNode[0].y, destNode[0].z)
+                ]);
 
-            var curve = new THREE.CatmullRomCurve3([
-                new THREE.Vector3(sourceNode[0].x, sourceNode[0].y, sourceNode[0].z),
-                new THREE.Vector3(globalCenterX, 50, globalCenterY),
-                new THREE.Vector3(destNode[0].x, destNode[0].y, destNode[0].z)
-            ]);
+                var geometry = new THREE.Geometry();
+                geometry.vertices = curve.getPoints(50);
 
-            var geometry = new THREE.Geometry();
-            geometry.vertices = curve.getPoints(50);
+                var material = new THREE.LineBasicMaterial({
+                    color: lineColor
+                });
 
-            var material = new THREE.LineBasicMaterial({
-                color: lineColor
-            });
+                var line = new THREE.Line(geometry, material);
+                line.name = sourceNode[0].name + " -> " + destNode[0].name;
+                lineGroup.add(line);
+                scene.add(lineGroup);
 
-            var line = new THREE.Line(geometry, material);
-            line.name = sourceNode[0].name + " -> " + destNode[0].name;
-            lineGroup.add(line);
-            scene.add(lineGroup);
-
-            drawLabel(sourceNode[0].name, sourceNode[0].x, sourceNode[0].y, sourceNode[0].z);
-            drawLabel(destNode[0].name, destNode[0].x, destNode[0].y, destNode[0].z);
+                drawLabel(sourceNode[0].name, sourceNode[0].x, sourceNode[0].y, sourceNode[0].z);
+                drawLabel(destNode[0].name, destNode[0].x, destNode[0].y, destNode[0].z);
+            }
         });
-
     }
 
-    // funkcia na vykreslenie nazvu letiska ku kazdemu uzlu
+    // function to draw label of airport name
     function drawLabel(message, x, y, z) {
 
         var canvas = document.createElement('canvas');
@@ -223,13 +223,16 @@
     }
 
     function onSelectFilter(input) {
+        console.log('Input:' + input);
         $.each(lineGroup.children, function (index, line) {
             line.visible = true;
+            console.log(index);
         });
 
         if (input != 'All') {
             $.each(lineGroup.children, function (index, line) {
                 if (line.name.indexOf(input + ' -> ') < 0) {
+                    console.log('Name: ' + line.name);
                     line.visible = false;
                 }
             });
